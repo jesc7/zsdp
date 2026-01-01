@@ -100,11 +100,13 @@ func Start(ctx context.Context, service bool) error {
 }
 
 type Msg struct {
-	Type  int    `json:"type"`
-	Code  int    `json:"code"`
-	Key   int    `json:"key,omitzero"`
-	Pwd   string `json:"pwd,omitzero"`
-	Value string `json:"value,omitzero"`
+	Type    int    `json:"type"`
+	Code    int    `json:"code"`
+	Error   string `json:"error,omitzero"`
+	Key     int    `json:"key,omitzero"`
+	Pwd     string `json:"pwd,omitzero"`
+	Token   string `json:"token,omitzero"`
+	Caption string `json:"caption,omitzero"`
 }
 
 func handleWS(w http.ResponseWriter, r *http.Request) {
