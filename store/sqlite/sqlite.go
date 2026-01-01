@@ -36,12 +36,13 @@ func newSQLiteStore(dbName string) (*SQLiteStore, error) {
 		return nil, e
 	}
 	_, e = store.db.Exec(`
-		CREATE TABLE IF NOT EXISTS sdps (
+		create table if not exists sdps (
 			inserted integer default (unixepoch()),
-			key INTEGER PRIMARY KEY,
-			pwd TEXT NOT NULL,
-			offer TEXT,
-			persist INTEGER NOT NULL DEFAULT 0
+			key integer primary key,
+			pwd text not null,
+			token text,
+			caption text,
+			offer text
 		);`)
 	return store, e
 }
