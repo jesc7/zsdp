@@ -47,18 +47,19 @@ func newSQLiteStore(dbName string) (*SQLiteStore, error) {
 	return store, e
 }
 
-func GenerateKey() (int, error) {
-	const (
-		KEYVALUE_MIN = 100_000
-		KEYVALUE_MAX = 999_999
-	)
-	var key int //генерируем ключ
+func GenerateKey() (int, error) { //генерируем ключ
+	key, keyMin, keyMax := 0, 100_000, 999_999
 	for i, found := 0, true; i <= 1000 && found; _, found = keys[key] {
-		key, i = rnd.Intn(KEYVALUE_MAX-KEYVALUE_MIN+1)+KEYVALUE_MIN, i+1
+		key, i = rnd.Intn(keyMax-keyMin+1)+keyMin, i+1
 	}
 	if key == 0 {
-		return 0, "", errors.New("key doesnt generated")
+		return 0, errors.New("key doesnt generated")
 	}
+	return key, nil
+}
+
+func GeneratePassword() (string, error) { //генерируем пароль
+	return util.RandomString(4), nil
 }
 
 func (store *SQLiteStore) SendOffer(value string, args ...any) (int, string, error) {
@@ -78,17 +79,18 @@ func (store *SQLiteStore) SendOffer(value string, args ...any) (int, string, err
 		return 0, "", errors.New("arg #1 has wrong type")
 	}
 
-	var key int //генерируем ключ
-	for i, found := 0, true; i <= 1000 && found; _, found = keys[key] {
-		key, i = rnd.Intn(KEYVALUE_MAX-KEYVALUE_MIN+1)+KEYVALUE_MIN, i+1
-	}
-	if key == 0 {
-		return 0, "", errors.New("key doesnt generated")
+	key, e := GenerateKey()
+	if e != nil {
+		return 0, "", e
 	}
 	keys[key] = obj
-	pwd := util.RandomString(4) //генерируем пароль
 
-	_, e := store.db.Exec("insert into sdps (key, pwd, offer) values (?, ?, ?)", key, pwd, value)
+	pwd, e := GeneratePassword()
+	if e != nil {
+		return 0, "", e
+	}
+
+	_, e = store.db.Exec("insert into sdps (key, pwd, offer) values (?, ?, ?)", key, pwd, value)
 	return key, pwd, e
 }
 
