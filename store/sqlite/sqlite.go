@@ -63,11 +63,6 @@ func GeneratePassword() (string, error) { //генерируем пароль
 }
 
 func (store *SQLiteStore) SendOffer(value string, args ...any) (int, string, error) {
-	const (
-		KEYVALUE_MIN = 100_000
-		KEYVALUE_MAX = 999_999
-	)
-
 	mut.Lock()
 	defer mut.Unlock()
 
